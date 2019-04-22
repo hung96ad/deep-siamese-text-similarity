@@ -24,14 +24,14 @@ tf.flags.DEFINE_string("word2vec_model", "wiki.simple.vec", "word2vec pre-traine
 tf.flags.DEFINE_string("word2vec_format", "text", "word2vec pre-trained embeddings file format (bin/text/textgz)(default: None)")
 
 tf.flags.DEFINE_integer("embedding_dim", 300, "Dimensionality of character embedding (default: 300)")
-tf.flags.DEFINE_float("dropout_keep_prob", 1.0, "Dropout keep probability (default: 1.0)")
+tf.flags.DEFINE_float("dropout_keep_prob", 0.6, "Dropout keep probability (default: 0.6)")
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularizaion lambda (default: 0.0)")
 tf.flags.DEFINE_string("training_files", "person_match.train2", "training file (default: None)")  #for sentence semantic similarity use "train_snli.txt"
 tf.flags.DEFINE_integer("hidden_units", 50, "Number of hidden units (default:50)")
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 300, "Number of training epochs (default: 200)")
+tf.flags.DEFINE_integer("num_epochs", 50, "Number of training epochs (default: 50)")
 tf.flags.DEFINE_integer("evaluate_every", 1000, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 1000, "Save model after this many steps (default: 100)")
 # Misc Parameters
@@ -172,6 +172,7 @@ with tf.Graph().as_default():
                 arr=inpH.pre_emb["zero"]
             if len(arr)>0:
                 idx = vocab_processor.vocabulary_.get(w)
+                print(arr, idx)
                 initW[idx]=np.asarray(arr).astype(np.float32)
         print("Done assigning intiW. len="+str(len(initW)))
         inpH.deletePreEmb()
@@ -224,7 +225,7 @@ with tf.Graph().as_default():
         time_str = datetime.datetime.now().isoformat()
         print("DEV {}: step {}, loss {:g}, acc {:g}".format(time_str, step, loss, accuracy))
         dev_summary_writer.add_summary(summaries, step)
-        print (y_batch, sim)
+        print(y_batch, sim)
         return accuracy
 
     # Generate batches
